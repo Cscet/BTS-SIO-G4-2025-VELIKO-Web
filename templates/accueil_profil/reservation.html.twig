@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AccueilProfilController!{% endblock %}
+
+{% block content %}
+
+    {% for reservation in reservations %}
+
+    <div>
+        <h3> Id : {{ reservation.id }}</h3>
+        <h3> Date : {{  reservation.dateResa|date('d/m/y') }}</h3>
+        <h3> Station de départ : {{  reservation.stationDep }}</h3>
+        <h3> Station d'arrivée : {{  reservation.stationFin }}</h3>
+    </div>
+        <hr>
+
+    {% endfor %}
+
+{% endblock %}
