@@ -58,6 +58,8 @@ class RegistrationController extends AbstractController
             $token = (new GenerateToken())->create();
             $user->setConfirmationToken($token);
 
+            $user->setConnexion(new \DateTime());
+
             $entityManager->persist($user);
             $entityManager->flush();
 

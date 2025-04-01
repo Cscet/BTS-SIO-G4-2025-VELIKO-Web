@@ -8,7 +8,9 @@ use App\veliko\GenerateToken;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\Clock\DatePoint;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use function Symfony\Component\Clock\now;
 
 class AppFixtures extends Fixture
 {
@@ -33,6 +35,7 @@ class AppFixtures extends Fixture
         $user->setIsVerified(true);
         $user->setBlocked(false);
         $user->setRenouvelerMdp(false);
+        $user->setConnexion(new \DateTime());
 
         $manager->persist($user);
 
@@ -51,6 +54,8 @@ class AppFixtures extends Fixture
             $user->setIsVerified(true);
             $user->setBlocked(false);
             $user->setRenouvelerMdp(false);
+            $user->setConnexion(new \DateTime("2024-01-01"));
+
 
 
             $manager->persist($user);

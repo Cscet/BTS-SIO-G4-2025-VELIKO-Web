@@ -93,6 +93,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $renouvelerMdp = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $Connexion = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $statut = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -283,6 +289,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRenouvelerMdp(bool $renouvelerMdp): static
     {
         $this->renouvelerMdp = $renouvelerMdp;
+
+        return $this;
+    }
+
+    public function getConnexion(): ?\DateTimeInterface
+    {
+        return $this->Connexion;
+    }
+
+    public function setConnexion(\DateTimeInterface $Connexion): static
+    {
+        $this->Connexion = $Connexion;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(string $statut): static
+    {
+        $this->statut = $statut;
 
         return $this;
     }
