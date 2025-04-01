@@ -56,6 +56,16 @@ class ReservationRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('r')
             ->andWhere('r.id_user = :id_user')
             ->setParameter('id_user', $id_user)
+            ->getQuery()
+            ->getResult();
+
+    }
+
+    public function get5ReservationByIdUser(int $id_user): array
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.id_user = :id_user')
+            ->setParameter('id_user', $id_user)
             ->setMaxResults(5)
             ->getQuery()
             ->getResult();
