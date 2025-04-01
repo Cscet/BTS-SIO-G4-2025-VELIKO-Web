@@ -7,6 +7,7 @@ use App\Entity\StationFavori;
 use App\Form\PasswordChangeFormType;
 use App\Form\ReservationFormType;
 use App\Form\ResetFormType;
+use App\Repository\ReservationRepository;
 use App\veliko\Api;
 use Doctrine\ORM\EntityManagerInterface;
 //use http\Client\Response;
@@ -92,7 +93,7 @@ class MapController extends AbstractController
 
 
     #[Route('/reservation', name: 'app_reservation', methods: ['GET', 'POST', 'PUT'])]
-    public function index(Request $request, EntityManagerInterface $entityManager, Api $api): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, Api $api, ReservationRepository $reservationRepository): Response
     {
         // Vérifier si l'utilisateur est connecté
         $user = $this->getUser();
@@ -119,9 +120,13 @@ class MapController extends AbstractController
             foreach ($stations as $station){
                 if ($station['name'] == $stationDep){
                     $stationDepId = $station['station_id'];
+                    $stationDepLat = $station['lat'];
+                    $stationDepLon = $station['lon'];
                 }
                 if ($station['name'] == $stationFin){
                     $stationFinId = $station['station_id'];
+                    $stationFinLat = $station['lat'];
+                    $stationFinLon = $station['lon'];
                 }
             }
             if ($typeVelo == "mécanique"){
@@ -152,6 +157,11 @@ class MapController extends AbstractController
                 $api->getApi("/api/velo/".$veloDispoId."/location", "PUT", $_ENV["API_VELIKO_TOKEN"]);
                 $api->getApi("/api/velo/".$veloDispoId."/restore/".$stationFinId, "PUT", $_ENV["API_VELIKO_TOKEN"]);
 
+
+
+                $distance = $this->haversineGreatCircleDistance($stationDepLat, $stationDepLon, $stationFinLat, $stationFinLon);
+
+
                 // Créer une nouvelle réservation
                 $reservation = new Reservation();
                 $reservation->setDateResa(new \DateTime('now'));
@@ -159,6 +169,7 @@ class MapController extends AbstractController
                 $reservation->setStationFin($stationFin);
                 $reservation->setIdUser($user->getId());
                 $reservation->setTypeVelo($typeVelo);
+                $reservation->setDistance($distance);
 
                 $nbrReservations = $entityManager->getRepository(Reservation::class)->countReservationsByUserId($user->getId());
                 if ($nbrReservations <= 5) {
@@ -239,6 +250,28 @@ class MapController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+
+    private function haversineGreatCircleDistance(
+        float $latitudeFrom, float $longitudeFrom, float $latitudeTo, float $longitudeTo, float $earthRadius = 6371.0): float
+    {
+        $latFrom = deg2rad($latitudeFrom);
+        $lonFrom = deg2rad($longitudeFrom);
+        $latTo = deg2rad($latitudeTo);
+        $lonTo = deg2rad($longitudeTo);
+
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        $a = sin($latDelta / 2) * sin($latDelta / 2) +
+            cos($latFrom) * cos($latTo) *
+            sin($lonDelta / 2) * sin($lonDelta / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return round($earthRadius * $c, 3); // Arrondi à 3 chiffres après la virgule
+
+}
 
 
 

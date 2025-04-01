@@ -33,6 +33,14 @@ class AccueilProfilController extends AbstractController
 
         $reservations = $reservationRepository->getReservationByIdUser($id_user);
 
+        $distanceTotale = 0;
+
+        foreach ($reservations as $reservation) {
+            $distanceTotale += $reservation->getDistance();
+        }
+
+        $caloriesPerdues = $distanceTotale * 30;
+
 
 
 
@@ -40,7 +48,9 @@ class AccueilProfilController extends AbstractController
 
         return $this->render('accueil_profil/reservation.html.twig', [
             'controller_name' => 'AccueilProfilController',
-            'reservations' => $reservations
+            'reservations' => $reservations,
+            'distanceTotale' => $distanceTotale,
+            'caloriesPerdues' => $caloriesPerdues
         ]);
     }
 }

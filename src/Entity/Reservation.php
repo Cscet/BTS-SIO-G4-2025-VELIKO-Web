@@ -29,6 +29,9 @@ class Reservation
     #[ORM\Column(length: 255)]
     private ?string $type_velo = null;
 
+    #[ORM\Column]
+    private ?float $distance = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -90,6 +93,18 @@ class Reservation
     public function setTypeVelo(string $type_velo): static
     {
         $this->type_velo = $type_velo;
+
+        return $this;
+    }
+
+    public function getDistance(): ?float
+    {
+        return $this->distance;
+    }
+
+    public function setDistance(float $distance): static
+    {
+        $this->distance = $distance;
 
         return $this;
     }

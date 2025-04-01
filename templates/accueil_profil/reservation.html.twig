@@ -4,6 +4,11 @@
 
 {% block content %}
 
+    <h1>Voici vos réservations</h1>
+
+    <h2> Distance totale parcourue : {{ distanceTotale }} km</h2>
+    <h2> Nombre de calories perdues : {{ caloriesPerdues}} cal </h2>
+
     {% for reservation in reservations %}
 
     <div>
@@ -11,6 +16,7 @@
         <h3> Date : {{  reservation.dateResa|date('d/m/y') }}</h3>
         <h3> Station de départ : {{  reservation.stationDep }}</h3>
         <h3> Station d'arrivée : {{  reservation.stationFin }}</h3>
+        <h3> Distance : {{ reservation.distance }} km</h3>
     </div>
         <hr>
 
