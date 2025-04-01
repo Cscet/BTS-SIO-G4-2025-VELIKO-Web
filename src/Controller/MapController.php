@@ -83,7 +83,8 @@ class MapController extends AbstractController
             [
                 "titre"   => 'MapController',
                 "request" => $request,
-                "stations" => $stations
+                "stations" => $stations,
+                "user" => $user,
             ]
         );
     }
@@ -159,6 +160,20 @@ class MapController extends AbstractController
                 $reservation->setIdUser($user->getId());
                 $reservation->setTypeVelo($typeVelo);
 
+                $nbrReservations = $entityManager->getRepository(Reservation::class)->countReservationsByUserId($user->getId());
+                if ($nbrReservations <= 5) {
+                    $user->setStatut("débutant");
+                }
+                if ($nbrReservations <= 10 && $nbrReservations > 5) {
+                    $user->setStatut("confirmé");
+                }
+                if ($nbrReservations > 10) {
+                    $user->setStatut("expert");
+                }
+
+                $entityManager->persist($user);
+
+
                 // Sauvegarder la réservation
                 $entityManager->persist($reservation);
                 $entityManager->flush();
@@ -171,10 +186,6 @@ class MapController extends AbstractController
                 ));
 
             }
-
-
-
-
 
         }
 
