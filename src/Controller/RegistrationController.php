@@ -59,6 +59,7 @@ class RegistrationController extends AbstractController
             $user->setConfirmationToken($token);
 
             $user->setConnexion(new \DateTime());
+            $user->setStatut("Débutant");
 
             $entityManager->persist($user);
             $entityManager->flush();
