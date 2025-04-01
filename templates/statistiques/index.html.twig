@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello StatistiquesController!{% endblock %}
+
+{% block content %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    #veloChart {
+        max-width: 400px;
+        max-height: 400px;
+        margin: auto;
+        display: block;
+    }
+</style>
+</head>
+<body>
+<div class="example-wrapper">
+    <input type="number" id="idStation" placeholder="Entrez l'ID de la station">
+    <canvas id="veloChart"></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const idStationInput = document.getElementById('idStation');
+        const ctx = document.getElementById('veloChart').getContext('2d');
+        let veloChart = null;
+
+        function updateChart(stationId) {
+            fetch(`http://localhost:9042/api/station/${stationId}/status`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (veloChart) {
+                        veloChart.destroy();
+                    }
+                    veloChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Vélos mécaniques', 'Vélos électriques'],
+                            datasets: [{
+                                data: [data.num_bikes_available_types.mechanical, data.num_bikes_available_types.ebike],
+                                backgroundColor: ['#36A2EB', '#FF6384'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error("Erreur lors du chargement des données : ", error));
+        }
+
+        idStationInput.addEventListener('input', function () {
+            const stationId = idStationInput.value;
+            if (stationId) {
+                updateChart(stationId);
+            }
+        });
+    });
+</script>
+{% endblock %}
